@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"mobile-specs-golang/constants"
 	"mobile-specs-golang/data"
@@ -10,32 +9,33 @@ import (
 )
 
 func InsertData(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	db := GetDB()
-	defer db.Close()
-
-	var spec data.Mobile
-	err := json.NewDecoder(r.Body).Decode(&spec)
+	mobile, err := utils.DecodeJSON(r)	//Decode the request body and format it as per "spec"
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	} else {
-		id := utils.GetUUID()
-		if id != "" {
-			brand := spec.Brand
-			model := spec.Model
-			processor := spec.Processor
-			ram := spec.Ram
-			storage := spec.Storage
-			stmt, err := db.Prepare("INSERT INTO " + constants.TableName + " (id, brand, model, processor, ram, storage) VALUES (?,?,?,?,?,?)")
-			if err != nil {
-				panic(err.Error())
-			}
-			_, err = stmt.Exec(id, brand, model, processor, ram, storage)
-			if err != nil {
-				panic(err.Error())
-			}
-		} else {
-			panic("UUID generation failed")
-		}
+		InsertIntoDb(mobile)
+	}
+}
 
+func InsertIntoDb(mobile data.Mobile){
+	db := GetDB()
+	defer db.Close()
+	id, err := utils.GetUUID()
+	if err == nil {
+		brand := mobile.Brand
+		model := mobile.Model
+		processor := mobile.Processor
+		ram := mobile.Ram
+		storage := mobile.Storage
+		stmt, err := db.Prepare("INSERT INTO " + constants.TableName + " (id, brand, model, processor, ram, storage) VALUES (?,?,?,?,?,?)")
+		if err != nil {
+			panic(err.Error())
+		}
+		_, err = stmt.Exec(id, brand, model, processor, ram, storage)
+		if err != nil {
+			panic(err.Error())
+		}
+	} else {
+		panic("UUID generation failed")
 	}
 }

@@ -1,10 +1,10 @@
 package repository
 
 import (
-	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"mobile-specs-golang/constants"
 	"mobile-specs-golang/data"
+	"mobile-specs-golang/utils"
 	"net/http"
 )
 
@@ -31,11 +31,5 @@ func GetMobileInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 		spec.Ram = ram
 		spec.Storage = storage
 	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	parseError := json.NewEncoder(w).Encode(&spec)
-
-	if parseError != nil {
-		panic(parseError.Error())
-	}
-
+	utils.EncodeJSON(w, spec)
 }

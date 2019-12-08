@@ -1,10 +1,10 @@
 package repository
 
 import (
-	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"mobile-specs-golang/constants"
 	"mobile-specs-golang/data"
+	"mobile-specs-golang/utils"
 	"net/http"
 )
 
@@ -33,9 +33,5 @@ func GetAllData(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		spec.Processor = processor
 		specAll = append(specAll, spec)
 	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	parseError := json.NewEncoder(w).Encode(&specAll)
-	if parseError != nil {
-		panic(parseError.Error())
-	}
+	utils.EncodeJSON(w, specAll)
 }

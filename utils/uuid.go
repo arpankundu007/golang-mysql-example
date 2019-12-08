@@ -2,11 +2,10 @@ package utils
 
 import uuid "github.com/satori/go.uuid"
 
-func GetUUID() string{
+func GetUUID() (string, error){
 	uuidVal, err := uuid.NewV4()
 	if err!=nil{
-		panic(err.Error())
-		return ""
+		return "", err
 	}
-	return uuidVal.String()
+	return uuidVal.String(), nil
 }
