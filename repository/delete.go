@@ -1,4 +1,4 @@
-package database_actions
+package repository
 
 import (
 	"github.com/julienschmidt/httprouter"
@@ -8,7 +8,7 @@ import (
 )
 
 func DeleteData(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		db := GetDB(constants.DbName)
+		db := GetDB()
 		defer db.Close()
 		id := ps.ByName("id")
 

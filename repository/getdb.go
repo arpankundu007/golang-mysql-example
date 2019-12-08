@@ -1,4 +1,4 @@
-package database_actions
+package repository
 
 import (
 	"database/sql"
@@ -6,24 +6,29 @@ import (
 	"mobile-specs-golang/constants"
 )
 
-func GetDB(DbName string) *sql.DB {
-	dbSource, err := sql.Open("mysql", "root:1q2w3e4r@tcp(127.0.0.1:3306)/")
+func GetDB() *sql.DB {
+	driver, dataSource := getDBConfig()
+	dbSource, err := sql.Open(driver, dataSource)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = dbSource.Exec("CREATE DATABASE IF NOT EXISTS " + DbName) //Create main if not exists
+	_, err = dbSource.Exec("CREATE DATABASE IF NOT EXISTS " + constants.DbName) //Create main if not exists
 	if err != nil {
 		panic(err)
 	}
 
 	defer dbSource.Close()
 
-	db, err := sql.Open("mysql", "root:1q2w3e4r@tcp(127.0.0.1:3306)/"+DbName) //Open the main and return it
+	db, err := sql.Open(driver, dataSource+constants.DbName) //Open the main and return it
 	if err != nil {
 		panic(err)
 	}
 	return db
+}
+
+func getDBConfig() (string, string){
+	return constants.DbDriver, constants.DbDataSource
 }
 
 func CreateTableIfNotExists(db *sql.DB) {

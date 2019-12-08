@@ -1,4 +1,4 @@
-package database_actions
+package repository
 
 import (
 	"database/sql"

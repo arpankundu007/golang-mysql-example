@@ -1,4 +1,4 @@
-package database_actions
+package repository
 
 import (
 	"encoding/json"
@@ -9,10 +9,10 @@ import (
 )
 
 func GetAllData(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	db := GetDB(constants.DbName)
+	db := GetDB()
+	defer db.Close()
 
 	selDB, err := db.Query("SELECT * FROM " + constants.TableName + " ORDER BY id ASC ")
-	defer db.Close()
 
 	if err != nil {
 		panic(err.Error())

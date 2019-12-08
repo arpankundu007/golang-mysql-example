@@ -1,4 +1,4 @@
-package database_actions
+package repository
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 )
 
 func GetMobileInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	db := GetDB(constants.DbName)
+	db := GetDB()
 	defer db.Close()
 	id := ps.ByName("id")
 	selDB, err := db.Query("SELECT * FROM "+constants.TableName+" WHERE ID = ?", id)

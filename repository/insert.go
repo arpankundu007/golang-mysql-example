@@ -1,4 +1,4 @@
-package database_actions
+package repository
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 )
 
 func InsertData(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	db := GetDB(constants.DbName)
+	db := GetDB()
 	defer db.Close()
 
 	var spec data.Mobile

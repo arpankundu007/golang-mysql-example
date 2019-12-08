@@ -2,32 +2,31 @@ package main
 
 import (
 	"github.com/julienschmidt/httprouter"
-	"mobile-specs-golang/constants"
-	"mobile-specs-golang/database-actions"
+	"mobile-specs-golang/repository"
 	"net/http"
 )
 
 func init() {
-	db := database_actions.GetDB(constants.DbName)
+	db := repository.GetDB()
 	defer db.Close()
-	database_actions.CreateTableIfNotExists(db)
+	repository.CreateTableIfNotExists(db)
 }
 
 func main() {
 
 	router := httprouter.New()
 
-	router.GET("/mobile/mobiles/:id", database_actions.GetMobileInfo)
+	router.GET("/mobile/mobiles/:id", repository.GetMobileInfo)
 
-	router.GET("/mobile/all", database_actions.GetAllData)
+	router.GET("/mobile/all", repository.GetAllData)
 
-	router.POST("/mobile/add", database_actions.InsertData)
+	router.POST("/mobile/add", repository.InsertData)
 
-	router.PUT("/mobile/update/:id", database_actions.UpdateData)
+	router.PUT("/mobile/update/:id", repository.UpdateData)
 
-	router.GET("/drop", database_actions.DropTableIfExists)
+	router.GET("/drop", repository.DropTableIfExists)
 
-	router.DELETE("/delete/{id}", database_actions.DeleteData)
+	router.DELETE("/delete/{id}", repository.DeleteData)
 
 	err := http.ListenAndServe(":8080", router)
 	if err != nil {
