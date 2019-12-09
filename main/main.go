@@ -8,6 +8,10 @@ import (
 
 func init() {
 	db := repository.GetDB()
+	err := db.Ping()
+	if err!=nil{
+		panic(err)
+	}
 	defer db.Close()
 	repository.CreateTableIfNotExists(db)
 }
@@ -26,7 +30,7 @@ func main() {
 
 	router.GET("/drop", repository.DropTableIfExists)
 
-	router.DELETE("/delete/{id}", repository.DeleteData)
+	router.DELETE("/delete/:id", repository.DeleteData)
 
 	err := http.ListenAndServe(":8080", router)
 	if err != nil {

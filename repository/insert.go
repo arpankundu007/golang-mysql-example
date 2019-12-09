@@ -3,9 +3,10 @@ package repository
 import (
 	"github.com/julienschmidt/httprouter"
 	"mobile-specs-golang/constants"
-	"mobile-specs-golang/data"
+	"mobile-specs-golang/models"
 	"mobile-specs-golang/utils"
 	"net/http"
+	"time"
 )
 
 func InsertData(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -17,7 +18,7 @@ func InsertData(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 }
 
-func InsertIntoDb(mobile data.Mobile){
+func InsertIntoDb(mobile models.Mobile){
 	db := GetDB()
 	defer db.Close()
 	id, err := utils.GetUUID()
@@ -27,11 +28,13 @@ func InsertIntoDb(mobile data.Mobile){
 		processor := mobile.Processor
 		ram := mobile.Ram
 		storage := mobile.Storage
-		stmt, err := db.Prepare("INSERT INTO " + constants.TableName + " (id, brand, model, processor, ram, storage) VALUES (?,?,?,?,?,?)")
+		createdAt := time.Now().Unix()
+		updatedAt := time.Now().Unix()
+		stmt, err := db.Prepare("INSERT INTO " + constants.TableName + " (id, brand, model, processor, ram, storage, createdAt, updatedAt) VALUES (?,?,?,?,?,?,?,?)")
 		if err != nil {
 			panic(err.Error())
 		}
-		_, err = stmt.Exec(id, brand, model, processor, ram, storage)
+		_, err = stmt.Exec(id, brand, model, processor, ram, storage, createdAt, updatedAt)
 		if err != nil {
 			panic(err.Error())
 		}

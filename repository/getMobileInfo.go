@@ -3,7 +3,7 @@ package repository
 import (
 	"github.com/julienschmidt/httprouter"
 	"mobile-specs-golang/constants"
-	"mobile-specs-golang/data"
+	"mobile-specs-golang/models"
 	"mobile-specs-golang/utils"
 	"net/http"
 )
@@ -16,11 +16,11 @@ func GetMobileInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 	if err != nil {
 		panic(err.Error())
 	}
-	spec := data.Mobile{}
+	spec := models.Mobile{}
 
 	for selDB.Next() {
-		var id, brand, model, processor, ram, storage string
-		err := selDB.Scan(&id, &brand, &model, &processor, &ram, &storage)
+		var id, brand, model, processor, ram, storage, createdAt, updatedAt string
+		err := selDB.Scan(&id, &brand, &model, &processor, &ram, &storage, &createdAt, &updatedAt)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -30,6 +30,8 @@ func GetMobileInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 		spec.Processor = processor
 		spec.Ram = ram
 		spec.Storage = storage
+		spec.CreatedAt = createdAt
+		spec.UpdatedAt = updatedAt
 	}
 	utils.EncodeJSON(w, spec)
 }

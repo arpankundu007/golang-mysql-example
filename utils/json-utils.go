@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"mobile-specs-golang/constants"
-	"mobile-specs-golang/data"
+	"mobile-specs-golang/models"
 	"net/http"
 )
 
@@ -15,8 +15,8 @@ func EncodeJSON(w http.ResponseWriter, data interface{}){
 	}
 }
 
-func DecodeJSON(r *http.Request) (data.Mobile, error){
-	var mobile data.Mobile
-	err := json.NewDecoder(r.Body).Decode(&mobile)
-	return mobile, err
+func DecodeJSON(r *http.Request) (models.Mobile, error){
+	var data models.Mobile
+	err := json.NewDecoder(r.Body).Decode(&data)
+	return data, err
 }

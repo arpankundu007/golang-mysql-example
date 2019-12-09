@@ -20,7 +20,7 @@ func GetDB() *sql.DB {
 
 	defer dbSource.Close()
 
-	db, err := sql.Open(driver, dataSource+constants.DbName) //Open the main and return it
+	db, err := sql.Open(driver, dataSource+constants.DbName) //Open the DB and return it
 	if err != nil {
 		panic(err)
 	}
@@ -32,13 +32,15 @@ func getDBConfig() (string, string){
 }
 
 func CreateTableIfNotExists(db *sql.DB) {
-	_, err := db.Exec("CREATE TABLE IF NOT EXISTS ` " + constants.TableName + "`(" +
+	_, err := db.Exec("CREATE TABLE IF NOT EXISTS `" + constants.TableName + "`(" +
 		" `id` varchar (50) NOT NULL," +
 		" `brand` varchar (30) NOT NULL, " +
 		" `model` varchar (30) NOT NULL," +
 		" `processor` varchar (30) NOT NULL, " +
 		" `ram` varchar (30) NOT NULL," +
 		" `storage` varchar (30) NOT NULL, " +
+		" `createdAt` varchar (30) NOT NULL, " +
+		" `updatedAt` varchar (30) NOT NULL, " +
 		"  PRIMARY KEY (`id`))" +
 		"  ENGINE=InnoDB " +
 		"  DEFAULT CHARSET=latin1")
