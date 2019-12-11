@@ -7,19 +7,21 @@ import (
 	"mobile-specs-golang/constants"
 	"mobile-specs-golang/utils"
 	"net/http"
+	"strconv"
 	"time"
 )
 
 var signingKey = []byte(constants.AuthKey)
 
-func generateJWT() (string, error) {
+func generateJWT(mins string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
-
+	minsInt, err := strconv.Atoi(mins)
+	duration := time.Duration(minsInt)
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["authorized"] = true
 	claims["user"] = "User"
-	claims["exp"] = time.Now().Add(time.Minute * 10).Unix()
+	claims["exp"] = time.Now().Add(time.Minute * duration).Unix()
 
 	generatedToken, err := token.SignedString(signingKey)
 
@@ -32,7 +34,8 @@ func generateJWT() (string, error) {
 
 func GenerateJWT() http.Handler{
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token, err := generateJWT()
+		mins := utils.GetParamFromRequestUrl(r, "exp")
+		token, err := generateJWT(mins)
 		if err != nil {
 			_, _ = io.WriteString(w, err.Error())
 			return

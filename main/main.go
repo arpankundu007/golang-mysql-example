@@ -23,7 +23,7 @@ func main() {
 
 	router.Handler(http.MethodGet, "/mobile/mobiles/:id", auth.IsAuthorized(repository.GetMobileInfo()))
 
-	router.Handler(http.MethodGet, "/token", auth.GenerateJWT())
+	router.Handler(http.MethodGet, "/token/:exp", auth.GenerateJWT())
 
 	router.Handler(http.MethodGet, "/mobile/all", auth.IsAuthorized(repository.GetAllData()))
 
