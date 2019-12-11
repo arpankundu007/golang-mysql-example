@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/julienschmidt/httprouter"
+	"mobile-specs-golang/auth"
 	"mobile-specs-golang/repository"
 	"net/http"
 )
@@ -9,7 +10,7 @@ import (
 func init() {
 	db := repository.GetDB()
 	err := db.Ping()
-	if err!=nil{
+	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
@@ -20,17 +21,19 @@ func main() {
 
 	router := httprouter.New()
 
-	router.GET("/mobile/mobiles/:id", repository.GetMobileInfo)
+	router.Handler(http.MethodGet, "/mobile/mobiles/", auth.IsAuthorized(repository.GetMobileInfo()))
 
-	router.GET("/mobile/all", repository.GetAllData)
+	router.Handler(http.MethodGet, "/token", auth.GenerateJWT())
 
-	router.POST("/mobile/add", repository.InsertData)
+	router.Handler(http.MethodGet, "/mobile/all", auth.IsAuthorized(repository.GetAllData()))
 
-	router.PUT("/mobile/update/:id", repository.UpdateData)
+	router.Handler(http.MethodPost, "/mobile/add", auth.IsAuthorized(repository.InsertData()))
+
+	router.Handler(http.MethodPut, "/mobile/update/:id", auth.IsAuthorized(repository.UpdateData()))
+
+	router.Handler(http.MethodDelete, "/delete/:id", auth.IsAuthorized(repository.DeleteData()))
 
 	router.GET("/drop", repository.DropTableIfExists)
-
-	router.DELETE("/delete/:id", repository.DeleteData)
 
 	err := http.ListenAndServe(":8080", router)
 	if err != nil {

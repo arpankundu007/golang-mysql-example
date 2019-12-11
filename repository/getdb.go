@@ -13,7 +13,7 @@ func GetDB() *sql.DB {
 		panic(err)
 	}
 
-	_, err = dbSource.Exec("CREATE DATABASE IF NOT EXISTS " + constants.DbName) //Create main if not exists
+	_, err = dbSource.Exec("CREATE DATABASE IF NOT EXISTS " + constants.DbName) //Create DB if not exists
 	if err != nil {
 		panic(err)
 	}

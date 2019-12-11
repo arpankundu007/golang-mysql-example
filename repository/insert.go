@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"github.com/julienschmidt/httprouter"
 	"mobile-specs-golang/constants"
 	"mobile-specs-golang/models"
 	"mobile-specs-golang/utils"
@@ -9,13 +8,15 @@ import (
 	"time"
 )
 
-func InsertData(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	mobile, err := utils.DecodeJSON(r)	//Decode the request body and format it as per "spec"
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	} else {
-		InsertIntoDb(mobile)
-	}
+func InsertData() http.Handler{
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mobile, err := utils.DecodeJSON(r)	//Decode the request body and format it as per "spec"
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			InsertIntoDb(mobile)
+		}
+	})
 }
 
 func InsertIntoDb(mobile models.Mobile){

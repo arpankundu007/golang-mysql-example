@@ -1,24 +1,26 @@
 package repository
 
 import (
-	"github.com/julienschmidt/httprouter"
 	"mobile-specs-golang/constants"
 	"mobile-specs-golang/models"
 	"mobile-specs-golang/utils"
 	"net/http"
+	"strings"
 	"time"
 )
 
-func UpdateData(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	id := ps.ByName("id")
-	spec, err := utils.DecodeJSON(r)
-	if err != nil {
-		panic(err.Error())
-	}else {
-		if UpdateDataInDB(spec, id){
-			utils.EncodeJSON(w, "Mobile updated successfully")
+func UpdateData() http.Handler{
+	return http.HandlerFunc(func(w http.ResponseWriter, r*http.Request) {
+		id := strings.TrimPrefix(r.URL.Path, "/mobile/update/")
+		spec, err := utils.DecodeJSON(r)
+		if err != nil {
+			panic(err.Error())
+		}else {
+			if UpdateDataInDB(spec, id){
+				utils.EncodeJSON(w, "Mobile updated successfully")
+			}
 		}
-	}
+	})
 }
 
 func UpdateDataInDB(mobile models.Mobile, id string) bool{
