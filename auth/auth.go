@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var mySigningKey = []byte(constants.AuthKey)
+var signingKey = []byte(constants.AuthKey)
 
 func generateJWT() (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -19,9 +19,9 @@ func generateJWT() (string, error) {
 
 	claims["authorized"] = true
 	claims["user"] = "User"
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+	claims["exp"] = time.Now().Add(time.Minute * 10).Unix()
 
-	generatedToken, err := token.SignedString(mySigningKey)
+	generatedToken, err := token.SignedString(signingKey)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -49,7 +49,7 @@ func IsAuthorized(next http.Handler) http.Handler {	//AuthMiddleware
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, fmt.Errorf("error parsing jwt")
 				}
-				return mySigningKey, nil
+				return signingKey, nil
 			})
 
 			if err != nil {

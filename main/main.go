@@ -21,7 +21,7 @@ func main() {
 
 	router := httprouter.New()
 
-	router.Handler(http.MethodGet, "/mobile/mobiles/", auth.IsAuthorized(repository.GetMobileInfo()))
+	router.Handler(http.MethodGet, "/mobile/mobiles/:id", auth.IsAuthorized(repository.GetMobileInfo()))
 
 	router.Handler(http.MethodGet, "/token", auth.GenerateJWT())
 
