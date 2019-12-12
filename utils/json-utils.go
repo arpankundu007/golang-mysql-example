@@ -29,3 +29,12 @@ func DecodeJSON(r *http.Request) (models.Mobile, error){
 	err := json.NewDecoder(r.Body).Decode(&data)
 	return data, err
 }
+
+func Contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
