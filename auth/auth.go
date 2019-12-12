@@ -1,54 +1,21 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"io"
 	"mobile-specs-golang/constants"
-	"mobile-specs-golang/utils"
 	"net/http"
-	"strconv"
-	"time"
+	"strings"
 )
 
 var signingKey = []byte(constants.AuthKey)
 
-func generateJWT(mins string) (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-	minsInt, err := strconv.Atoi(mins)
-	duration := time.Duration(minsInt)
-	claims := token.Claims.(jwt.MapClaims)
-
-	claims["authorized"] = true
-	claims["user"] = "User"
-	claims["exp"] = time.Now().Add(time.Minute * duration).Unix()
-
-	generatedToken, err := token.SignedString(signingKey)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		return "", err
-	}
-	return generatedToken, err
-}
-
-func GenerateJWT() http.Handler{
+func IsAuthorized(next http.Handler) http.Handler { //AuthMiddleware
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		mins := utils.GetParamFromRequestUrl(r, "exp")
-		token, err := generateJWT(mins)
-		if err != nil {
-			_, _ = io.WriteString(w, err.Error())
-			return
-		}
-		utils.EncodeJSON(w, token)
-	})
-}
-
-func IsAuthorized(next http.Handler) http.Handler {	//AuthMiddleware
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Header["Token"] != nil {
-
-			token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+		headerToken, err := getTokenFromHeader(r)
+		if err == nil {
+			token, err := jwt.Parse(headerToken, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, fmt.Errorf("error parsing jwt")
 				}
@@ -59,12 +26,20 @@ func IsAuthorized(next http.Handler) http.Handler {	//AuthMiddleware
 				_, _ = fmt.Fprintf(w, err.Error())
 			}
 
-			if token.Valid {	//TODO: Modify logic to authenticate users
+			if token.Valid { //TODO: Modify logic to authenticate users
 				next.ServeHTTP(w, r)
 			}
 		} else {
-
 			_, _ = fmt.Fprintf(w, "Not Authorized")
 		}
 	})
+}
+
+func getTokenFromHeader(r *http.Request) (string, error) {
+	authHeader := r.Header.Get("Authorization")
+	splitAuthHeader := strings.Split(authHeader, " ")
+	if len(splitAuthHeader) != 2 {
+		return "", errors.New("invalid auth header")
+	}
+	return splitAuthHeader[1], nil
 }

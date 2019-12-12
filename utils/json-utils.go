@@ -7,6 +7,15 @@ import (
 	"net/http"
 )
 
+func StructToJSONString(data interface{}) string {
+	jsonBytes, err := json.Marshal(data)
+	if err!=nil{
+		panic(err.Error())
+		return ""
+	}
+	return string(jsonBytes)
+}
+
 func EncodeJSON(w http.ResponseWriter, data interface{}){
 	w.Header().Set(constants.ContentTypeHeader, constants.ContentTypeValue)
 	parseError := json.NewEncoder(w).Encode(&data)
